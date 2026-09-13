@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart AndonLedger AI</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header class="topbar">
+        <div>
+            <p class="eyebrow">INDUSTRIAL IoT • EDGE AI</p>
+            <h1>Smart AndonLedger AI</h1>
+            <p class="subtitle">
+                Vision-based stack-light monitoring with Arduino UNO Q
+            </p>
+        </div>
+
+        <div id="connectionBadge" class="connection-badge waiting">
+            Waiting for telemetry
+        </div>
+    </header>
+
+    <main class="page">
+
+        <div id="longStopBanner" class="alert-banner hidden">
+            Prolonged machine stop detected
+        </div>
+
+        <section class="dashboard-grid">
+
+            <article class="card camera-card">
+                <div class="card-heading">
+                    <div>
+                        <p class="section-kicker">LIVE AI SENSOR</p>
+                        <h2>Stack-light camera</h2>
+                    </div>
+                </div>
+
+                <div class="camera-container">
+                    <div id="cameraPlaceholder" class="camera-placeholder">
+                        Starting annotated camera stream...
+                    </div>
+
+                    <iframe
+                        id="cameraStream"
+                        class="camera-stream"
+                        title="Annotated camera stream"
+                    ></iframe>
+                </div>
+
+                <div class="sensor-strip">
+                    <div>
+                        <span>Active lights</span>
+                        <strong id="activeLights">None</strong>
+                    </div>
+
+                    <div>
+                        <span>Confidence</span>
+                        <strong id="confidence">0%</strong>
+                    </div>
+
+                    <div>
+                        <span>Current-state time</span>
+                        <strong id="stateDuration">00:00:00</strong>
+                    </div>
+                </div>
+
+                <div class="threshold-panel">
+                    <div class="threshold-label">
+                        <span>Detection threshold</span>
+                        <strong id="thresholdValue">0.60</strong>
+                    </div>
+
+                    <input
+                        id="thresholdSlider"
+                        type="range"
+                        min="0.10"
+                        max="1.00"
+                        step="0.01"
+                        value="0.60"
+                    >
+                </div>
+            </article>
+
+            <article class="card status-card">
+                <p class="section-kicker">MACHINE STATE</p>
+
+                <div id="machineState" class="state-pill unknown">
+                    UNKNOWN
+                </div>
+
+                <p id="stateExplanation" class="state-explanation">
+                    Waiting for a stable stack-light detection.
+                </p>
+
+                <div class="shift-row">
+                    <span>Shift started</span>
+                    <strong id="shiftStart">-</strong>
+                </div>
+
+                <button id="resetShiftButton" class="secondary-button">
+                    Reset Shift Counters
+                </button>
+            </article>
+
+        </section>
+
+        <section class="metrics-grid">
+
+            <article class="metric-card">
+                <span>Runtime</span>
+                <strong id="runtime">00:00:00</strong>
+                <small>Confirmed RUNNING state</small>
+            </article>
+
+            <article class="metric-card">
+                <span>Downtime</span>
+                <strong id="downtime">00:00:00</strong>
+                <small>Confirmed FAULT state</small>
+            </article>
+
+            <article class="metric-card">
+                <span>Warning time</span>
+                <strong id="warningTime">00:00:00</strong>
+                <small>Confirmed WARNING state</small>
+            </article>
+
+            <article class="metric-card">
+                <span>Availability estimate</span>
+                <strong id="availability">0.0%</strong>
+                <small>Runtime / known monitored time</small>
+            </article>
+
+            <article class="metric-card">
+                <span>Fault events</span>
+                <strong id="faultCount">0</strong>
+                <small>Transitions into FAULT</small>
+            </article>
+
+            <article class="metric-card">
+                <span>Warning events</span>
+                <strong id="warningCount">0</strong>
+                <small>Transitions into WARNING</small>
+            </article>
+
+            <article class="metric-card">
+                <span>Unknown time</span>
+                <strong id="unknownTime">00:00:00</strong>
+                <small>No trustworthy light detection</small>
+            </article>
+
+            <article class="metric-card">
+                <span>Vision status</span>
+                <strong id="visionStatus">Waiting</strong>
+                <small>Latest AI observation</small>
+            </article>
+
+        </section>
+
+        <section class="card transition-card">
+            <div class="card-heading">
+                <div>
+                    <p class="section-kicker">TRANSITION LOGIC</p>
+                    <h2>How simultaneous lights are interpreted</h2>
+                </div>
+            </div>
+
+            <div class="transition-grid">
+                <div><strong>Green</strong><span>RUNNING</span></div>
+                <div><strong>Yellow</strong><span>WARNING</span></div>
+                <div><strong>Red</strong><span>FAULT</span></div>
+                <div><strong>Green + Yellow</strong><span>WARNING</span></div>
+                <div><strong>Green + Red</strong><span>FAULT</span></div>
+                <div><strong>Yellow + Red</strong><span>FAULT</span></div>
+            </div>
+
+            <p class="transition-note">
+                Prototype priority: <strong>RED &gt; YELLOW &gt; GREEN</strong>.
+                A new state must remain stable before it is committed.
+            </p>
+        </section>
+
+        <section class="card events-card">
+            <div class="card-heading">
+                <div>
+                    <p class="section-kicker">EVENT HISTORY</p>
+                    <h2>AndonLedger</h2>
+                </div>
+            </div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Previous</th>
+                            <th>New state</th>
+                            <th>Active lights</th>
+                            <th>Confidence</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="eventRows">
+                        <tr>
+                            <td colspan="5">Waiting for state transitions...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Keep these two library files from the copied App Lab example. -->
+    <script src="libs/socket.io.min.js"></script>
+    <script src="libs/arduino.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
