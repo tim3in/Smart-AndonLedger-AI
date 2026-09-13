@@ -50,12 +50,6 @@ If no reliable stack-light detection is available, the machine state becomes:
 UNKNOWN
 ```
 
-## Testing with Another Model
-
-A basic object-detection model, for example one that detects `person`, can also be used to test the camera stream and WebUI.
-
-The camera and object-detection stream should still work, but the machine state will remain `UNKNOWN` because the application only uses `red`, `yellow`, and `green` for machine-state calculations.
-
 ## Event Log
 
 Confirmed machine-state transitions are stored locally in:
