@@ -1,0 +1,28 @@
+Smart AndonLedger dashboard files
+
+Use these files inside a COPY of Arduino App Lab's Detect Objects on Camera example.
+
+Replace:
+- python/main.py
+- assets/index.html
+- assets/app.js
+- assets/style.css
+
+Keep from the copied example:
+- assets/libs/arduino.js
+- assets/libs/socket.io.min.js
+- app.yaml generated/configured by App Lab
+- the Video Object Detection brick and your selected Edge Impulse model
+
+The dashboard embeds the annotated Video Object Detection stream from:
+http://<UNO-Q-IP>:4912/embed
+
+The WebUI dashboard is normally served from the UNO Q on port 7000.
+
+The model labels expected by main.py are:
+red
+yellow
+green
+
+Prototype simultaneous-light priority:
+RED > YELLOW > GREEN
